@@ -6,6 +6,8 @@ import org.quartz.JobExecutionException
 import org.quartz.JobListener
 import org.quartz.listeners.JobListenerSupport
 import org.quartz.spi.TriggerFiredBundle
+import org.springframework.batch.core.configuration.JobRegistry
+import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.boot.autoconfigure.quartz.QuartzProperties
 import org.springframework.context.ApplicationContext
@@ -64,6 +66,16 @@ class QuartzConfig(
                 }
             }
         }
+    }
+
+    /**
+     * job registry 등록 (spring batch job을 등록하기 위해)
+     */
+    @Bean
+    fun jobRegistryBeanPostProcessor(jobRegistry: JobRegistry): JobRegistryBeanPostProcessor {
+        val jobRegistryBeanPostProcessor = JobRegistryBeanPostProcessor()
+        jobRegistryBeanPostProcessor.setJobRegistry(jobRegistry)
+        return jobRegistryBeanPostProcessor
     }
 }
 

@@ -23,3 +23,5 @@ spring:
     properties:
       autoStartup: false
       org.quartz.threadPool.threadCount: 5
+  batch:
+    job.enabled: false

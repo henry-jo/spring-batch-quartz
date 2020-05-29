@@ -1,8 +1,11 @@
 package com.henry.springbatchquartz.controller
 
+import com.henry.springbatchquartz.job.SimpleBatchJob
 import com.henry.springbatchquartz.service.JobScheduleService
 import org.quartz.Job
 import org.quartz.Scheduler
+import org.springframework.batch.core.configuration.JobLocator
+import org.springframework.batch.core.launch.JobLauncher
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -17,6 +20,8 @@ import kotlin.reflect.full.isSubclassOf
 @RequestMapping("/quartz")
 class JobScheduleController(
     private val scheduler: Scheduler,
+    private val jobLauncher: JobLauncher,
+    private val jobLocator: JobLocator,
     private val jobScheduleService: JobScheduleService
 ) {
     @GetMapping(value = ["/current-job-count"])
@@ -48,6 +53,20 @@ class JobScheduleController(
         )
 
         return ResponseEntity.ok("triggered: $${jobTriggerDTO.jobClassName} $jobData")
+    }
+
+    @PostMapping("/trigger/batch-job")
+    fun triggerBatchJob(): ResponseEntity<Unit> {
+        val jobData = hashMapOf(
+            "jobName" to "simpleJob"
+        )
+        jobScheduleService.schedule(
+            SimpleBatchJob::class.java as Class<out Job>,
+            jobData,
+            ZonedDateTime.now()
+        )
+
+        return ResponseEntity.noContent().build()
     }
 }
 
